@@ -78,15 +78,13 @@
       top: 52%;
       left: 50%;
       transform: translate3d(-50%, -50%, 0);
-      width: 54vmin;
-      height: 54vmin;
+      width: 58vmin;
+      height: 58vmin;
       border-radius: 50%;
       background: radial-gradient(circle, var(--c-glow) 0%, transparent 70%);
       opacity: 0.48;
-      filter: blur(36px);
       pointer-events: none;
       z-index: 1;
-      transition: background 0.45s ease;
       will-change: transform;
     }
 
@@ -273,15 +271,15 @@
       left: 0;
       top: 0;
       transform: translate(-50%, -100%);
-      width: 12vmin;
-      height: 12vmin;
-      background-color: var(--f-main, var(--c-main));
-      filter: blur(6vmin);
-      opacity: 0.95;
-      transition: background-color 0.4s ease;
+      width: 14vmin;
+      height: 14vmin;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--f-main, var(--c-main)) 0%, transparent 70%);
+      opacity: 0.9;
+      pointer-events: none;
     }
 
-    /* Pétalos de las 6 flores con colores ultra intensos y vibrantes */
+    /* Pétalos de las flores con colores ultra intensos y vibrantes */
     .flower__leaf {
       position: absolute;
       bottom: 0;
@@ -298,12 +296,13 @@
       );
       transform-origin: bottom center;
       opacity: 1;
-      filter: saturate(1.4) brightness(1.14);
+      filter: saturate(1.35) brightness(1.12);
       box-shadow:
-        inset 0 0 1.8vmin var(--f-light, var(--c-light)),
-        0 0 3.8vmin var(--f-glow, var(--c-glow)),
-        0 0 1.6vmin var(--f-main, var(--c-main));
-      transition: background-color 0.4s ease, background-image 0.4s ease, box-shadow 0.4s ease;
+        inset 0 0 1.6vmin var(--f-light, var(--c-light)),
+        0 0 3.2vmin var(--f-glow, var(--c-glow)),
+        0 0 1.4vmin var(--f-main, var(--c-main));
+      transition: background-color 0.25s ease, box-shadow 0.25s ease;
+      will-change: transform;
     }
 
     .flower__leaf--1 {
@@ -1021,6 +1020,42 @@
     .container * {
       animation-play-state: paused !important;
     }
+
+    /* ==========================================================================
+       OPTIMIZACIÓN Y TAMAÑO PARA PANTALLAS MÓVILES
+       ========================================================================== */
+    @media (max-width: 768px), (orientation: portrait) {
+      .flowers {
+        transform: scale(1.45) !important;
+        transform-origin: bottom center;
+        bottom: 8vmin;
+      }
+      .flower {
+        bottom: 6vmin;
+      }
+      .title-box {
+        top: 20px;
+        width: 95%;
+      }
+      .title-box .dedication-prefix {
+        font-size: 0.88rem;
+        letter-spacing: 5px;
+      }
+      .title-box h2 {
+        font-size: clamp(2.4rem, 10vw, 3.4rem);
+        letter-spacing: 1.5px;
+      }
+      .title-box .divider {
+        width: 140px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .flowers {
+        transform: scale(1.52) !important;
+        bottom: 6vmin;
+      }
+    }
   </style>
 </head>
 <body class="container">
@@ -1443,39 +1478,41 @@
       });
     }
 
-    function createSparkles(x, y, count = 28) {
+    function createSparkles(x, y, count = 16) {
+      if (particles.length > 36) particles.splice(0, particles.length - 20);
       const c = COLORS[index];
       for (let i = 0; i < count; i++) {
         const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 4.2 + 0.8;
+        const speed = Math.random() * 3.4 + 0.8;
         particles.push({
           x,
           y,
           vx: Math.cos(angle) * speed,
-          vy: Math.sin(angle) * speed - 0.6,
-          r: Math.random() * 3 + 1.2,
+          vy: Math.sin(angle) * speed - 0.5,
+          r: Math.random() * 2.4 + 0.9,
           alpha: 1,
-          decay: Math.random() * 0.02 + 0.012,
+          decay: Math.random() * 0.025 + 0.015,
           color: i % 2 === 0 ? c.light : c.main
         });
       }
     }
 
-    // Rastro de polvo estelar a 120Hz
+    // Rastro de polvo estelar suave y optimizado
     let lastTrail = 0;
     function handlePointerMove(x, y) {
       const now = performance.now();
-      if (now - lastTrail > 8) {
+      if (now - lastTrail > 28) {
         lastTrail = now;
+        if (particles.length > 45) return;
         const c = COLORS[index];
         particles.push({
           x,
           y,
-          vx: (Math.random() - 0.5) * 1.1,
-          vy: (Math.random() - 0.5) * 1.1 - 0.3,
-          r: Math.random() * 2 + 0.8,
-          alpha: 0.85,
-          decay: 0.025,
+          vx: (Math.random() - 0.5) * 0.8,
+          vy: (Math.random() - 0.5) * 0.8 - 0.25,
+          r: Math.random() * 1.8 + 0.7,
+          alpha: 0.8,
+          decay: 0.03,
           color: Math.random() < 0.5 ? c.light : "#ffffff"
         });
       }
@@ -1505,16 +1542,14 @@
         s.alpha += s.da * step;
         if (s.alpha > 0.95 || s.alpha < 0.15) s.da *= -1;
 
-        ctx.save();
         ctx.globalAlpha = Math.max(0.1, Math.min(1, s.alpha));
         ctx.fillStyle = "#ffffff";
         ctx.beginPath();
         ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
         ctx.fill();
-        ctx.restore();
       }
 
-      // 2. Luciérnagas multicolor flotando entre las hojas
+      // 2. Luciérnagas multicolor flotando entre las hojas (Aceleradas por hardware)
       for (let i = 0; i < fireflies.length; i++) {
         const f = fireflies[i];
         f.angle += 0.022 * step;
@@ -1527,18 +1562,23 @@
         }
 
         const fc = COLORS[(index + f.colorOffset) % COLORS.length];
-        ctx.save();
+
+        // Resplandor exterior suave
+        ctx.globalAlpha = f.alpha * 0.35;
+        ctx.fillStyle = fc.main;
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, f.r * 2.6, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Núcleo luminoso brillante
         ctx.globalAlpha = f.alpha;
         ctx.fillStyle = fc.light;
-        ctx.shadowBlur = 14;
-        ctx.shadowColor = fc.main;
         ctx.beginPath();
         ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
         ctx.fill();
-        ctx.restore();
       }
 
-      // 3. Mariposas de luz revoloteando a 120Hz
+      // 3. Mariposas de luz revoloteando (Sin bloqueos de GPU)
       for (let i = 0; i < butterflies.length; i++) {
         const b = butterflies[i];
         b.phase += 0.016 * step;
@@ -1556,12 +1596,17 @@
         ctx.save();
         ctx.translate(b.x, b.y);
         ctx.rotate(Math.sin(b.phase) * 0.18 * dir);
-        ctx.fillStyle = bc.light;
-        ctx.shadowBlur = 16;
-        ctx.shadowColor = bc.main;
-        ctx.globalAlpha = 0.9;
 
-        // Ala superior
+        // Resplandor de mariposa
+        ctx.globalAlpha = 0.32;
+        ctx.fillStyle = bc.main;
+        ctx.beginPath();
+        ctx.ellipse(-2 * dir, -b.size * 0.45 * wingFlap, b.size * 1.15, b.size * 0.75 * wingFlap, -0.35 * dir, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Ala superior brillante
+        ctx.globalAlpha = 0.92;
+        ctx.fillStyle = bc.light;
         ctx.beginPath();
         ctx.ellipse(-2 * dir, -b.size * 0.45 * wingFlap, b.size * 0.85, b.size * 0.55 * wingFlap, -0.35 * dir, 0, Math.PI * 2);
         ctx.fill();
@@ -1574,7 +1619,7 @@
         ctx.restore();
       }
 
-      // 4. Destellos interactivos a 120Hz
+      // 4. Destellos interactivos de alto rendimiento
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
         p.x += p.vx * step;
@@ -1587,15 +1632,19 @@
           continue;
         }
 
-        ctx.save();
-        ctx.globalAlpha = p.alpha;
+        // Halo suave
+        ctx.globalAlpha = p.alpha * 0.38;
         ctx.fillStyle = p.color;
-        ctx.shadowBlur = 12;
-        ctx.shadowColor = c.main;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, p.r * 2.2, 0, Math.PI * 2);
         ctx.fill();
-        ctx.restore();
+
+        // Núcleo brillante
+        ctx.globalAlpha = p.alpha;
+        ctx.fillStyle = "#ffffff";
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r * 0.75, 0, Math.PI * 2);
+        ctx.fill();
       }
 
       requestAnimationFrame(animate);

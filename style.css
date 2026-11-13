@@ -1,4 +1,4 @@
-﻿    *,
+    *,
     *::after,
     *::before {
       padding: 0;
@@ -66,15 +66,13 @@
       top: 52%;
       left: 50%;
       transform: translate3d(-50%, -50%, 0);
-      width: 54vmin;
-      height: 54vmin;
+      width: 58vmin;
+      height: 58vmin;
       border-radius: 50%;
       background: radial-gradient(circle, var(--c-glow) 0%, transparent 70%);
       opacity: 0.48;
-      filter: blur(36px);
       pointer-events: none;
       z-index: 1;
-      transition: background 0.45s ease;
       will-change: transform;
     }
 
@@ -261,15 +259,15 @@
       left: 0;
       top: 0;
       transform: translate(-50%, -100%);
-      width: 12vmin;
-      height: 12vmin;
-      background-color: var(--f-main, var(--c-main));
-      filter: blur(6vmin);
-      opacity: 0.95;
-      transition: background-color 0.4s ease;
+      width: 14vmin;
+      height: 14vmin;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--f-main, var(--c-main)) 0%, transparent 70%);
+      opacity: 0.9;
+      pointer-events: none;
     }
 
-    /* Pétalos de las 6 flores con colores ultra intensos y vibrantes */
+    /* Pétalos de las flores con colores ultra intensos y vibrantes */
     .flower__leaf {
       position: absolute;
       bottom: 0;
@@ -286,12 +284,13 @@
       );
       transform-origin: bottom center;
       opacity: 1;
-      filter: saturate(1.4) brightness(1.14);
+      filter: saturate(1.35) brightness(1.12);
       box-shadow:
-        inset 0 0 1.8vmin var(--f-light, var(--c-light)),
-        0 0 3.8vmin var(--f-glow, var(--c-glow)),
-        0 0 1.6vmin var(--f-main, var(--c-main));
-      transition: background-color 0.4s ease, background-image 0.4s ease, box-shadow 0.4s ease;
+        inset 0 0 1.6vmin var(--f-light, var(--c-light)),
+        0 0 3.2vmin var(--f-glow, var(--c-glow)),
+        0 0 1.4vmin var(--f-main, var(--c-main));
+      transition: background-color 0.25s ease, box-shadow 0.25s ease;
+      will-change: transform;
     }
 
     .flower__leaf--1 {
@@ -1008,4 +1007,40 @@
     /* Se activa al quitar la clase container para que todo florezca suave */
     .container * {
       animation-play-state: paused !important;
+    }
+
+    /* ==========================================================================
+       OPTIMIZACIÓN Y TAMAÑO PARA PANTALLAS MÓVILES
+       ========================================================================== */
+    @media (max-width: 768px), (orientation: portrait) {
+      .flowers {
+        transform: scale(1.45) !important;
+        transform-origin: bottom center;
+        bottom: 8vmin;
+      }
+      .flower {
+        bottom: 6vmin;
+      }
+      .title-box {
+        top: 20px;
+        width: 95%;
+      }
+      .title-box .dedication-prefix {
+        font-size: 0.88rem;
+        letter-spacing: 5px;
+      }
+      .title-box h2 {
+        font-size: clamp(2.4rem, 10vw, 3.4rem);
+        letter-spacing: 1.5px;
+      }
+      .title-box .divider {
+        width: 140px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .flowers {
+        transform: scale(1.52) !important;
+        bottom: 6vmin;
+      }
     }

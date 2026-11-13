@@ -1,4 +1,4 @@
-﻿    /* ==========================================================================
+    /* ==========================================================================
        24 COLORES ULTRA INTENSOS Y VIBRANTES PARA LAS FLORES
        ========================================================================== */
     const COLORS = [
@@ -169,39 +169,41 @@
       });
     }
 
-    function createSparkles(x, y, count = 28) {
+    function createSparkles(x, y, count = 16) {
+      if (particles.length > 36) particles.splice(0, particles.length - 20);
       const c = COLORS[index];
       for (let i = 0; i < count; i++) {
         const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 4.2 + 0.8;
+        const speed = Math.random() * 3.4 + 0.8;
         particles.push({
           x,
           y,
           vx: Math.cos(angle) * speed,
-          vy: Math.sin(angle) * speed - 0.6,
-          r: Math.random() * 3 + 1.2,
+          vy: Math.sin(angle) * speed - 0.5,
+          r: Math.random() * 2.4 + 0.9,
           alpha: 1,
-          decay: Math.random() * 0.02 + 0.012,
+          decay: Math.random() * 0.025 + 0.015,
           color: i % 2 === 0 ? c.light : c.main
         });
       }
     }
 
-    // Rastro de polvo estelar a 120Hz
+    // Rastro de polvo estelar suave y optimizado
     let lastTrail = 0;
     function handlePointerMove(x, y) {
       const now = performance.now();
-      if (now - lastTrail > 8) {
+      if (now - lastTrail > 28) {
         lastTrail = now;
+        if (particles.length > 45) return;
         const c = COLORS[index];
         particles.push({
           x,
           y,
-          vx: (Math.random() - 0.5) * 1.1,
-          vy: (Math.random() - 0.5) * 1.1 - 0.3,
-          r: Math.random() * 2 + 0.8,
-          alpha: 0.85,
-          decay: 0.025,
+          vx: (Math.random() - 0.5) * 0.8,
+          vy: (Math.random() - 0.5) * 0.8 - 0.25,
+          r: Math.random() * 1.8 + 0.7,
+          alpha: 0.8,
+          decay: 0.03,
           color: Math.random() < 0.5 ? c.light : "#ffffff"
         });
       }
@@ -231,16 +233,14 @@
         s.alpha += s.da * step;
         if (s.alpha > 0.95 || s.alpha < 0.15) s.da *= -1;
 
-        ctx.save();
         ctx.globalAlpha = Math.max(0.1, Math.min(1, s.alpha));
         ctx.fillStyle = "#ffffff";
         ctx.beginPath();
         ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
         ctx.fill();
-        ctx.restore();
       }
 
-      // 2. Luciérnagas multicolor flotando entre las hojas
+      // 2. Luciérnagas multicolor flotando entre las hojas (Aceleradas por hardware)
       for (let i = 0; i < fireflies.length; i++) {
         const f = fireflies[i];
         f.angle += 0.022 * step;
@@ -253,18 +253,23 @@
         }
 
         const fc = COLORS[(index + f.colorOffset) % COLORS.length];
-        ctx.save();
+
+        // Resplandor exterior suave
+        ctx.globalAlpha = f.alpha * 0.35;
+        ctx.fillStyle = fc.main;
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, f.r * 2.6, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Núcleo luminoso brillante
         ctx.globalAlpha = f.alpha;
         ctx.fillStyle = fc.light;
-        ctx.shadowBlur = 14;
-        ctx.shadowColor = fc.main;
         ctx.beginPath();
         ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
         ctx.fill();
-        ctx.restore();
       }
 
-      // 3. Mariposas de luz revoloteando a 120Hz
+      // 3. Mariposas de luz revoloteando (Sin bloqueos de GPU)
       for (let i = 0; i < butterflies.length; i++) {
         const b = butterflies[i];
         b.phase += 0.016 * step;
@@ -282,12 +287,17 @@
         ctx.save();
         ctx.translate(b.x, b.y);
         ctx.rotate(Math.sin(b.phase) * 0.18 * dir);
-        ctx.fillStyle = bc.light;
-        ctx.shadowBlur = 16;
-        ctx.shadowColor = bc.main;
-        ctx.globalAlpha = 0.9;
 
-        // Ala superior
+        // Resplandor de mariposa
+        ctx.globalAlpha = 0.32;
+        ctx.fillStyle = bc.main;
+        ctx.beginPath();
+        ctx.ellipse(-2 * dir, -b.size * 0.45 * wingFlap, b.size * 1.15, b.size * 0.75 * wingFlap, -0.35 * dir, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Ala superior brillante
+        ctx.globalAlpha = 0.92;
+        ctx.fillStyle = bc.light;
         ctx.beginPath();
         ctx.ellipse(-2 * dir, -b.size * 0.45 * wingFlap, b.size * 0.85, b.size * 0.55 * wingFlap, -0.35 * dir, 0, Math.PI * 2);
         ctx.fill();
@@ -300,7 +310,7 @@
         ctx.restore();
       }
 
-      // 4. Destellos interactivos a 120Hz
+      // 4. Destellos interactivos de alto rendimiento
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
         p.x += p.vx * step;
@@ -313,15 +323,19 @@
           continue;
         }
 
-        ctx.save();
-        ctx.globalAlpha = p.alpha;
+        // Halo suave
+        ctx.globalAlpha = p.alpha * 0.38;
         ctx.fillStyle = p.color;
-        ctx.shadowBlur = 12;
-        ctx.shadowColor = c.main;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, p.r * 2.2, 0, Math.PI * 2);
         ctx.fill();
-        ctx.restore();
+
+        // Núcleo brillante
+        ctx.globalAlpha = p.alpha;
+        ctx.fillStyle = "#ffffff";
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r * 0.75, 0, Math.PI * 2);
+        ctx.fill();
       }
 
       requestAnimationFrame(animate);
