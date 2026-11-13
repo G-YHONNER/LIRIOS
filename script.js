@@ -55,33 +55,76 @@
       applyFlowerPalette();
     }
 
-    // Cambiar combinación de colores al presionar cualquier parte de la pantalla
-    window.addEventListener("click", (e) => {
-      if (e.clientX < window.innerWidth * 0.35) {
+    // Cambiar combinación de colores al presionar cualquier parte de la pantalla (Touch y Clic)
+    let lastInteraction = 0;
+    function handleTapOrClick(clientX, clientY) {
+      const now = performance.now();
+      if (now - lastInteraction < 200) return;
+      lastInteraction = now;
+
+      if (clientX < window.innerWidth * 0.35) {
         updateGardenColor(index - 1);
       } else {
         updateGardenColor(index + 1);
       }
-      createSparkles(e.clientX, e.clientY, 34);
+      createSparkles(clientX, clientY, 34);
+    }
+
+    window.addEventListener("click", (e) => {
+      handleTapOrClick(e.clientX, e.clientY);
     });
+
+    window.addEventListener("touchend", (e) => {
+      if (e.changedTouches && e.changedTouches[0]) {
+        handleTapOrClick(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+      }
+    }, { passive: true });
 
     window.addEventListener("keydown", (e) => {
       if (e.key === "ArrowLeft") updateGardenColor(index - 1);
       if (e.key === "ArrowRight") updateGardenColor(index + 1);
     });
 
+    // Bloqueo total de zoom en pantalla para móviles (gestos, pellizcos y doble toque)
+    document.addEventListener("touchstart", (e) => {
+      if (e.touches.length > 1) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+
+    document.addEventListener("touchmove", (e) => {
+      if (e.touches.length > 1) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+
+    let lastTap = 0;
+    document.addEventListener("touchend", (e) => {
+      const now = performance.now();
+      if (now - lastTap < 300) {
+        e.preventDefault();
+      }
+      lastTap = now;
+    }, { passive: false });
+
+    document.addEventListener("gesturestart", (e) => e.preventDefault());
+    document.addEventListener("gesturechange", (e) => e.preventDefault());
+    document.addEventListener("gestureend", (e) => e.preventDefault());
+
     /* ==========================================================================
        CANVAS NOCTURNO, LUCIÉRNAGAS Y MARIPOSAS DE LUZ A 120HZ
        ========================================================================== */
     const canvas = document.getElementById("canvas");
-    const ctx = canvas.getContext("2d", { alpha: true, desynchronized: true });
+    const ctx = canvas.getContext("2d");
     let w = (canvas.width = window.innerWidth);
     let h = (canvas.height = window.innerHeight);
 
-    window.addEventListener("resize", () => {
+    function resizeCanvas() {
       w = canvas.width = window.innerWidth;
       h = canvas.height = window.innerHeight;
-    });
+    }
+    window.addEventListener("resize", resizeCanvas);
+    window.addEventListener("orientationchange", resizeCanvas);
 
     const particles = [];
     const bgStars = [];

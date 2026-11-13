@@ -11,3 +11,4 @@ Un jardín interactivo animado con flores brillantes y luciérnagas mágicas baj
 
 ## 🌐 Ver en vivo (GitHub Pages)
 👉 [https://g-yhonner.github.io/LIRIOS/](https://g-yhonner.github.io/LIRIOS/)
+
