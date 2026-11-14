@@ -111,10 +111,10 @@
       background: transparent;
     }
 
-    /* Dedicatoria superior para Diana Marisol */
+    /* Dedicatoria superior para Diana Marisol (posición bajada 5% y tipografía ajustada) */
     .title-box {
       position: fixed;
-      top: 24px;
+      top: clamp(28px, 5vh, 48px);
       left: 50%;
       transform: translateX(-50%);
       text-align: center;
@@ -127,7 +127,7 @@
     .title-box .dedication-prefix {
       display: block;
       font-family: 'Cinzel', serif;
-      font-size: clamp(0.82rem, 2vw, 1.02rem);
+      font-size: clamp(0.78rem, 1.9vw, 0.97rem);
       letter-spacing: 6px;
       text-transform: uppercase;
       color: rgba(255, 255, 255, 0.85);
@@ -139,7 +139,7 @@
       font-family: 'Cormorant Garamond', serif;
       font-style: italic;
       font-weight: 700;
-      font-size: clamp(2.3rem, 6.4vw, 3.9rem);
+      font-size: clamp(2.18rem, 6.08vw, 3.7rem);
       letter-spacing: 1.5px;
       color: #ffffff;
       text-shadow: 0 0 16px var(--c-glow), 0 0 36px var(--c-glow);
@@ -177,10 +177,11 @@
        ========================================================================== */
     .flowers {
       position: relative;
-      transform: scale(0.9);
+      transform: scale(0.99);
       transform-origin: bottom center;
       bottom: -3vmin;
       z-index: 10;
+      filter: saturate(1.22) brightness(1.08);
     }
 
     .flower {
@@ -292,7 +293,7 @@
       pointer-events: none;
     }
 
-    /* Pétalos de las flores con colores interpolados en tiempo real sin cortes */
+    /* Pétalos de las flores con colores interpolados de alto rendimiento */
     .flower__leaf {
       position: absolute;
       bottom: 0;
@@ -309,11 +310,10 @@
       );
       transform-origin: bottom center;
       opacity: 1;
-      filter: saturate(1.35) brightness(1.12);
       box-shadow:
         inset 0 0 1.6vmin var(--f-light, var(--c-light)),
-        0 0 3.2vmin var(--f-glow, var(--c-glow)),
-        0 0 1.4vmin var(--f-main, var(--c-main));
+        0 0 2.8vmin var(--f-glow, var(--c-glow)),
+        0 0 1.2vmin var(--f-main, var(--c-main));
       will-change: transform;
     }
 
@@ -1032,11 +1032,11 @@
     }
 
     /* ==========================================================================
-       OPTIMIZACIÓN Y TAMAÑO PARA PANTALLAS MÓVILES
+       OPTIMIZACIÓN Y TAMAÑO PARA PANTALLAS MÓVILES (FLORES +10%, LETRA BAJADA 5%)
        ========================================================================== */
     @media (max-width: 768px), (orientation: portrait) {
       .flowers {
-        transform: scale(1.36) !important;
+        transform: scale(1.50) !important;
         transform-origin: bottom center;
         bottom: -4vmin !important;
       }
@@ -1044,15 +1044,15 @@
         bottom: -2vmin !important;
       }
       .title-box {
-        top: 20px;
+        top: clamp(26px, 5.2vh, 48px);
         width: 96%;
       }
       .title-box .dedication-prefix {
-        font-size: 0.88rem;
+        font-size: 0.84rem;
         letter-spacing: 5px;
       }
       .title-box h2 {
-        font-size: clamp(2.1rem, 8.8vw, 3.3rem);
+        font-size: clamp(2.0rem, 8.36vw, 3.14rem);
         letter-spacing: 1.2px;
       }
       .title-box .divider {
@@ -1062,7 +1062,7 @@
 
     @media (max-width: 420px) {
       .flowers {
-        transform: scale(1.42) !important;
+        transform: scale(1.56) !important;
         transform-origin: bottom center;
         bottom: -5vmin !important;
       }
@@ -1361,9 +1361,9 @@
     }
 
     function rgbToCss(rgb, alpha = 1) {
-      const r = Math.round(rgb[0]);
-      const g = Math.round(rgb[1]);
-      const b = Math.round(rgb[2]);
+      const r = (rgb[0] + 0.5) | 0;
+      const g = (rgb[1] + 0.5) | 0;
+      const b = (rgb[2] + 0.5) | 0;
       return alpha === 1 ? `rgb(${r}, ${g}, ${b})` : `rgba(${r}, ${g}, ${b}, ${alpha})`;
     }
 
@@ -1373,7 +1373,7 @@
       curr[2] += (target[2] - curr[2]) * factor;
     }
 
-    // Pre-calculamos los valores RGB para máxima fluidez a 120Hz
+    // Pre-calculamos los valores RGB para máxima fluidez
     const PALETTE_RGB = COLORS.map((c) => ({
       name: c.name,
       main: hexToRgb(c.main),
@@ -1407,6 +1407,8 @@
     );
 
     let colorTransitionActive = true;
+    let prevRootCss = "";
+    let prevFlowerCss = ["", "", ""];
 
     function setTargetPalette(newIndex) {
       index = (newIndex + PALETTE_RGB.length) % PALETTE_RGB.length;
@@ -1422,23 +1424,34 @@
     function stepColorInterpolation(step) {
       if (!colorTransitionActive) return;
 
-      // Factor de suavizado exponencial: transiciones sedosas incluso si se hacen muchos clics seguidos
-      const factor = 1 - Math.pow(0.91, step);
+      // Factor de suavizado optimizado (~20 frames / ~320ms a 60fps): rápido y sedoso sin congelar móviles
+      const factor = 1 - Math.pow(0.78, step);
 
       lerpRgb(currentRootColor.main, targetRootColor.main, factor);
       lerpRgb(currentRootColor.mid, targetRootColor.mid, factor);
       lerpRgb(currentRootColor.back, targetRootColor.back, factor);
       lerpRgb(currentRootColor.light, targetRootColor.light, factor);
 
-      root.setProperty("--c-main", rgbToCss(currentRootColor.main));
-      root.setProperty("--c-mid", rgbToCss(currentRootColor.mid));
-      root.setProperty("--c-back", rgbToCss(currentRootColor.back));
-      root.setProperty("--c-light", rgbToCss(currentRootColor.light));
-      root.setProperty("--c-glow", rgbToCss(currentRootColor.main, 1));
+      const rMain = rgbToCss(currentRootColor.main);
+      const rMid = rgbToCss(currentRootColor.mid);
+      const rBack = rgbToCss(currentRootColor.back);
+      const rLight = rgbToCss(currentRootColor.light);
+      const rootKey = `${rMain}|${rMid}|${rBack}|${rLight}`;
+
+      if (rootKey !== prevRootCss) {
+        prevRootCss = rootKey;
+        root.setProperty("--c-main", rMain);
+        root.setProperty("--c-mid", rMid);
+        root.setProperty("--c-back", rBack);
+        root.setProperty("--c-light", rLight);
+        root.setProperty("--c-glow", rMain);
+      }
 
       let maxDiff = 0;
 
-      flowerNodes.forEach((fl, i) => {
+      for (let i = 0; i < 3; i++) {
+        const fl = flowerNodes[i];
+        if (!fl) continue;
         const curr = currentFlowerColors[i];
         const targ = targetFlowerColors[i];
 
@@ -1446,48 +1459,79 @@
         lerpRgb(curr.mid, targ.mid, factor);
         lerpRgb(curr.light, targ.light, factor);
 
-        fl.style.setProperty("--f-main", rgbToCss(curr.main));
-        fl.style.setProperty("--f-mid", rgbToCss(curr.mid));
-        fl.style.setProperty("--f-light", rgbToCss(curr.light));
-        fl.style.setProperty("--f-glow", rgbToCss(curr.main, 1));
+        const fMain = rgbToCss(curr.main);
+        const fMid = rgbToCss(curr.mid);
+        const fLight = rgbToCss(curr.light);
+        const fKey = `${fMain}|${fMid}|${fLight}`;
 
-        maxDiff = Math.max(
-          maxDiff,
-          Math.abs(curr.main[0] - targ.main[0]),
-          Math.abs(curr.main[1] - targ.main[1]),
-          Math.abs(curr.main[2] - targ.main[2])
-        );
-      });
+        if (fKey !== prevFlowerCss[i]) {
+          prevFlowerCss[i] = fKey;
+          fl.style.setProperty("--f-main", fMain);
+          fl.style.setProperty("--f-mid", fMid);
+          fl.style.setProperty("--f-light", fLight);
+          fl.style.setProperty("--f-glow", fMain);
+        }
 
-      if (maxDiff < 0.25) {
+        const d0 = Math.abs(curr.main[0] - targ.main[0]);
+        const d1 = Math.abs(curr.main[1] - targ.main[1]);
+        const d2 = Math.abs(curr.main[2] - targ.main[2]);
+        if (d0 > maxDiff) maxDiff = d0;
+        if (d1 > maxDiff) maxDiff = d1;
+        if (d2 > maxDiff) maxDiff = d2;
+      }
+
+      if (maxDiff < 0.8) {
         colorTransitionActive = false;
+        const tMain = rgbToCss(targetRootColor.main);
+        root.setProperty("--c-main", tMain);
+        root.setProperty("--c-mid", rgbToCss(targetRootColor.mid));
+        root.setProperty("--c-back", rgbToCss(targetRootColor.back));
+        root.setProperty("--c-light", rgbToCss(targetRootColor.light));
+        root.setProperty("--c-glow", tMain);
+
+        for (let i = 0; i < 3; i++) {
+          const fl = flowerNodes[i];
+          if (!fl) continue;
+          const targ = targetFlowerColors[i];
+          const tfMain = rgbToCss(targ.main);
+          fl.style.setProperty("--f-main", tfMain);
+          fl.style.setProperty("--f-mid", rgbToCss(targ.mid));
+          fl.style.setProperty("--f-light", rgbToCss(targ.light));
+          fl.style.setProperty("--f-glow", tfMain);
+        }
       }
     }
 
-    // Cambiar combinación de colores al presionar cualquier parte de la pantalla (Touch y Clic)
-    let lastInteraction = 0;
+    // Cambiar combinación de colores con control anti-rebote y filtro de clics fantasma en móviles
+    let lastTapTime = 0;
+    let lastTouchTime = 0;
+
     function handleTapOrClick(clientX, clientY) {
       const now = performance.now();
-      if (now - lastInteraction < 180) return;
-      lastInteraction = now;
+      if (now - lastTapTime < 240) return;
+      lastTapTime = now;
 
       if (clientX < window.innerWidth * 0.35) {
         setTargetPalette(index - 1);
       } else {
         setTargetPalette(index + 1);
       }
-      createSparkles(clientX, clientY, 34);
+      createSparkles(clientX, clientY, 14);
     }
 
-    window.addEventListener("click", (e) => {
-      handleTapOrClick(e.clientX, e.clientY);
-    });
-
     window.addEventListener("touchend", (e) => {
+      lastTouchTime = performance.now();
       if (e.changedTouches && e.changedTouches[0]) {
-        handleTapOrClick(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+        const t = e.changedTouches[0];
+        handleTapOrClick(t.clientX, t.clientY);
       }
     }, { passive: true });
+
+    window.addEventListener("click", (e) => {
+      // Ignora clics emulados por el navegador tras el evento táctil
+      if (performance.now() - lastTouchTime < 450) return;
+      handleTapOrClick(e.clientX, e.clientY);
+    });
 
     window.addEventListener("keydown", (e) => {
       if (e.key === "ArrowLeft") setTargetPalette(index - 1);
@@ -1501,13 +1545,6 @@
 
     document.addEventListener("touchmove", (e) => {
       if (e.touches.length > 1) e.preventDefault();
-    }, { passive: false });
-
-    let lastTap = 0;
-    document.addEventListener("touchend", (e) => {
-      const now = performance.now();
-      if (now - lastTap < 300) e.preventDefault();
-      lastTap = now;
     }, { passive: false });
 
     document.addEventListener("gesturestart", (e) => e.preventDefault());
@@ -1534,7 +1571,7 @@
     const fireflies = [];
     const butterflies = [];
 
-    for (let i = 0; i < 95; i++) {
+    for (let i = 0; i < 65; i++) {
       bgStars.push({
         x: Math.random() * w,
         y: Math.random() * (h * 0.78),
@@ -1544,13 +1581,13 @@
       });
     }
 
-    // Luciérnagas mágicas con interpolación de color individual
-    for (let i = 0; i < 32; i++) {
+    // Luciérnagas mágicas con interpolación de color individual optimizada
+    for (let i = 0; i < 20; i++) {
       const initColor = PALETTE_RGB[(index + i * 2) % PALETTE_RGB.length];
       fireflies.push({
         x: Math.random() * w,
         y: Math.random() * h,
-        r: Math.random() * 2.3 + 0.9,
+        r: Math.random() * 2.2 + 0.9,
         alpha: Math.random() * 0.8 + 0.2,
         vy: -(Math.random() * 0.45 + 0.15),
         vx: (Math.random() - 0.5) * 0.35,
@@ -1561,7 +1598,7 @@
       });
     }
 
-    // 4 Mariposas luminosas con transición de color sedosa
+    // 4 Mariposas luminosas con transición cromática sedosa
     for (let i = 0; i < 4; i++) {
       const initColor = PALETTE_RGB[(index + i * 4) % PALETTE_RGB.length];
       butterflies.push({
@@ -1578,42 +1615,42 @@
       });
     }
 
-    function createSparkles(x, y, count = 16) {
-      if (particles.length > 36) particles.splice(0, particles.length - 20);
+    function createSparkles(x, y, count = 14) {
+      if (particles.length > 24) particles.splice(0, particles.length - 12);
       const mainCss = rgbToCss(targetRootColor.main);
       const lightCss = rgbToCss(targetRootColor.light);
       for (let i = 0; i < count; i++) {
         const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 3.4 + 0.8;
+        const speed = Math.random() * 3.2 + 0.8;
         particles.push({
           x,
           y,
           vx: Math.cos(angle) * speed,
           vy: Math.sin(angle) * speed - 0.5,
-          r: Math.random() * 2.4 + 0.9,
+          r: Math.random() * 2.2 + 0.8,
           alpha: 1,
-          decay: Math.random() * 0.025 + 0.015,
+          decay: Math.random() * 0.03 + 0.018,
           color: i % 2 === 0 ? lightCss : mainCss
         });
       }
     }
 
-    // Rastro de polvo estelar suave
+    // Rastro de polvo estelar suave y fluido
     let lastTrail = 0;
     function handlePointerMove(x, y) {
       const now = performance.now();
-      if (now - lastTrail > 28) {
+      if (now - lastTrail > 34) {
         lastTrail = now;
-        if (particles.length > 45) return;
+        if (particles.length > 25) return;
         const lightCss = rgbToCss(currentRootColor.light);
         particles.push({
           x,
           y,
           vx: (Math.random() - 0.5) * 0.8,
           vy: (Math.random() - 0.5) * 0.8 - 0.25,
-          r: Math.random() * 1.8 + 0.7,
+          r: Math.random() * 1.7 + 0.6,
           alpha: 0.8,
-          decay: 0.03,
+          decay: 0.035,
           color: Math.random() < 0.5 ? lightCss : "#ffffff"
         });
       }
@@ -1638,19 +1675,18 @@
       stepColorInterpolation(step);
 
       ctx.clearRect(0, 0, w, h);
-      const entityColorLerp = 1 - Math.pow(0.92, step);
+      const entityColorLerp = 1 - Math.pow(0.90, step);
 
-      // 1. Estrellas del cielo titilando
+      // 1. Estrellas del cielo titilando (dibujadas eficientemente)
+      ctx.fillStyle = "#ffffff";
       for (let i = 0; i < bgStars.length; i++) {
         const s = bgStars[i];
         s.alpha += s.da * step;
         if (s.alpha > 0.95 || s.alpha < 0.15) s.da *= -1;
 
         ctx.globalAlpha = Math.max(0.1, Math.min(1, s.alpha));
-        ctx.fillStyle = "#ffffff";
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-        ctx.fill();
+        const d = s.r * 2;
+        ctx.fillRect(s.x - s.r, s.y - s.r, d, d);
       }
 
       // 2. Luciérnagas multicolor con fundido suave de color
@@ -1673,7 +1709,7 @@
         ctx.globalAlpha = f.alpha * 0.35;
         ctx.fillStyle = rgbToCss(f.currMain);
         ctx.beginPath();
-        ctx.arc(f.x, f.y, f.r * 2.6, 0, Math.PI * 2);
+        ctx.arc(f.x, f.y, f.r * 2.5, 0, Math.PI * 2);
         ctx.fill();
 
         // Núcleo luminoso brillante
@@ -1728,7 +1764,7 @@
         ctx.restore();
       }
 
-      // 4. Destellos interactivos
+      // 4. Destellos interactivos de alto rendimiento
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
         p.x += p.vx * step;
@@ -1744,7 +1780,7 @@
         ctx.globalAlpha = p.alpha * 0.38;
         ctx.fillStyle = p.color;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r * 2.2, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, p.r * 2, 0, Math.PI * 2);
         ctx.fill();
 
         ctx.globalAlpha = p.alpha;
