@@ -1011,121 +1011,72 @@
     }
 
     /* ==========================================================================
-       BASE NATURAL DE CÉSPED Y FOLLAJE (CUBRE EL NACIMIENTO DE LOS TALLOS)
+       BASE NATURAL DE FOLLAJE (CUBRE TODA LA PANTALLA INFERIOR DE LADO A LADO)
        ========================================================================== */
     .garden-base {
-      position: absolute;
-      bottom: -1vmin;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 48vmin;
-      height: 20vmin;
-      z-index: 50;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: 28vmin;
+      z-index: 25;
       pointer-events: none;
+      overflow: hidden;
     }
 
     .base-glow {
       position: absolute;
       bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 52vmin;
-      height: 16vmin;
-      border-radius: 50%;
-      background: radial-gradient(ellipse at center, rgba(16, 185, 129, 0.45) 0%, rgba(5, 109, 36, 0.25) 50%, transparent 75%);
-      filter: blur(14px);
-    }
-
-    .base-mound {
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 38vmin;
-      height: 9vmin;
-      border-radius: 50% 50% 0 0;
-      background: linear-gradient(to top, #010a05 0%, #064e1e 65%, #0d7a36 100%);
-      box-shadow: inset 0 2px 6px rgba(52, 211, 153, 0.35), 0 0 16px rgba(6, 78, 30, 0.4);
+      left: 0;
+      width: 100%;
+      height: 12vmin;
+      background: linear-gradient(to top, rgba(2, 5, 20, 0.85) 0%, rgba(5, 78, 30, 0.25) 60%, transparent 100%);
+      pointer-events: none;
+      z-index: 10;
     }
 
     .base-leaf {
       position: absolute;
-      bottom: 1.5vmin;
-      left: 50%;
-      width: 5.5vmin;
-      height: 16vmin;
-      border-radius: 100% 0 100% 0 / 100% 0 100% 0;
-      background: linear-gradient(135deg, #10b981 0%, #056d24 60%, #022c0f 100%);
+      bottom: -1vmin;
       transform-origin: bottom center;
-      box-shadow: inset 0 0 4px rgba(255, 255, 255, 0.15), 0 0 8px rgba(0, 0, 0, 0.35);
+      box-shadow: inset 0 0 4px rgba(255, 255, 255, 0.16), 0 0 10px rgba(0, 0, 0, 0.45);
       will-change: transform;
+      z-index: 5;
     }
 
-    .base-leaf--1 {
-      height: 18vmin;
-      width: 6vmin;
-      transform: translate(-120%, 0) rotate(-45deg);
+    .base-leaf.arch-left {
       border-radius: 0 100% 0 100% / 0 100% 0 100%;
-      animation: base-sway-1 4s ease-in-out infinite alternate;
+      background: linear-gradient(135deg, #34d399 0%, #10b981 25%, #056d24 65%, #022c0f 100%);
+      transform: translate(-50%, 0) rotate(var(--rot, -30deg));
+      animation: sway-left var(--spd, 4s) ease-in-out infinite alternate var(--del, 0s);
     }
-    .base-leaf--2 {
-      height: 18vmin;
-      width: 6vmin;
-      transform: translate(20%, 0) rotate(45deg);
-      animation: base-sway-2 4s ease-in-out infinite alternate 0.5s;
+
+    .base-leaf.arch-right {
+      border-radius: 100% 0 100% 0 / 100% 0 100%;
+      background: linear-gradient(225deg, #34d399 0%, #10b981 25%, #056d24 65%, #022c0f 100%);
+      transform: translate(-50%, 0) rotate(var(--rot, 30deg));
+      animation: sway-right var(--spd, 4s) ease-in-out infinite alternate var(--del, 0s);
     }
-    .base-leaf--3 {
-      height: 15vmin;
-      width: 5.2vmin;
-      transform: translate(-170%, 1.5vmin) rotate(-68deg);
-      border-radius: 0 100% 0 100% / 0 100% 0 100%;
-      animation: base-sway-1 3.5s ease-in-out infinite alternate 0.8s;
-    }
-    .base-leaf--4 {
-      height: 15vmin;
-      width: 5.2vmin;
-      transform: translate(70%, 1.5vmin) rotate(68deg);
-      animation: base-sway-2 3.5s ease-in-out infinite alternate 1.2s;
-    }
-    .base-leaf--5 {
-      height: 14vmin;
-      width: 5vmin;
-      transform: translate(-80%, -0.5vmin) rotate(-22deg);
-      border-radius: 0 100% 0 100% / 0 100% 0 100%;
-      animation: base-sway-1 4.5s ease-in-out infinite alternate 1s;
-    }
-    .base-leaf--6 {
-      height: 14vmin;
-      width: 5vmin;
-      transform: translate(-20%, -0.5vmin) rotate(22deg);
-      animation: base-sway-2 4.5s ease-in-out infinite alternate 0.3s;
-    }
-    .base-leaf--7 {
-      height: 12.5vmin;
-      width: 5.2vmin;
-      transform: translate(-50%, -1.5vmin) rotate(0deg);
+
+    .base-leaf.arch-center {
       border-radius: 50% 50% 0 0;
-      background: linear-gradient(to top, #056d24, #10b981 85%, #34d399 100%);
-      animation: base-sway-center 3s ease-in-out infinite alternate;
-    }
-    .base-leaf--8 {
-      height: 10vmin;
-      width: 4.8vmin;
-      transform: translate(-50%, -0.8vmin) rotate(-4deg);
-      background: linear-gradient(to top, #064e1e, #10b981);
+      background: linear-gradient(to top, #022c0f 0%, #056d24 40%, #10b981 85%, #34d399 100%);
+      transform: translate(-50%, 0) rotate(var(--rot, 0deg));
+      animation: sway-center var(--spd, 3.5s) ease-in-out infinite alternate var(--del, 0s);
     }
 
-    @keyframes base-sway-1 {
-      0% { transform: translate(-120%, 0) rotate(-45deg); }
-      100% { transform: translate(-120%, 0) rotate(-40deg); }
+    @keyframes sway-left {
+      0% { transform: translate(-50%, 0) rotate(var(--rot, -30deg)); }
+      100% { transform: translate(-50%, 0) rotate(calc(var(--rot, -30deg) + 5deg)); }
     }
-    @keyframes base-sway-2 {
-      0% { transform: translate(20%, 0) rotate(45deg); }
-      100% { transform: translate(20%, 0) rotate(40deg); }
+    @keyframes sway-right {
+      0% { transform: translate(-50%, 0) rotate(var(--rot, 30deg)); }
+      100% { transform: translate(-50%, 0) rotate(calc(var(--rot, 30deg) - 5deg)); }
     }
-    @keyframes base-sway-center {
-      0% { transform: translate(-50%, -1.5vmin) rotate(-3deg); }
-      100% { transform: translate(-50%, -1.5vmin) rotate(3deg); }
+    @keyframes sway-center {
+      0% { transform: translate(-50%, 0) rotate(calc(var(--rot, 0deg) - 3deg)); }
+      100% { transform: translate(-50%, 0) rotate(calc(var(--rot, 0deg) + 3deg)); }
     }
 
     /* ==========================================================================
@@ -1141,8 +1092,7 @@
         bottom: 0 !important;
       }
       .garden-base {
-        bottom: -0.5vmin;
-        transform: translateX(-50%) scale(1.15);
+        height: 25vmin;
       }
       .title-box {
         top: 20px;
@@ -1170,6 +1120,6 @@
         bottom: 0 !important;
       }
       .garden-base {
-        transform: translateX(-50%) scale(1.22);
+        height: 27vmin;
       }
     }
