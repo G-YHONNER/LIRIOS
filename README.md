@@ -1,4 +1,4 @@
-# 🌸 LIRIOS - Para ti, Dianna Marisol 🌸
+# 🌸 LIRIOS - Para ti, Diana 🌸
 
 Un jardín interactivo animado con flores brillantes y luciérnagas mágicas bajo un cielo estrellado.
 

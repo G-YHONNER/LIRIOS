@@ -87,7 +87,7 @@
       background: transparent;
     }
 
-    /* Dedicatoria superior para Dianna Marisol */
+    /* Dedicatoria superior para Diana */
     .title-box {
       position: fixed;
       top: 24px;
@@ -135,7 +135,7 @@
     /* Reflejo luminoso del suelo bajo el jardín */
     .ground-mist {
       position: fixed;
-      bottom: -3vmin;
+      bottom: -4vmin;
       left: 50%;
       transform: translate3d(-50%, 0, 0);
       width: 90vmin;
@@ -156,25 +156,26 @@
     .flowers {
       position: relative;
       transform: scale(0.9);
-      bottom: 0;
+      transform-origin: bottom center;
+      bottom: -3vmin;
       z-index: 10;
     }
 
     .flower {
       position: absolute;
-      bottom: 2vmin;
+      bottom: -2vmin;
       transform-origin: bottom center;
       z-index: 10;
       --fl-speed: 0.8s;
       will-change: transform;
     }
 
-    /* Flor 1: Alta al centro arriba (70vmin) */
+    /* Flor 1: Alta al centro arriba (72vmin) */
     .flower--1 {
       animation: moving-flower-1 4s linear infinite;
     }
     .flower--1 .flower__line {
-      height: 70vmin;
+      height: 72vmin;
       animation-delay: 0.3s;
     }
     .flower--1 .flower__line__leaf--1 {
@@ -196,14 +197,14 @@
       animation: blooming-leaf-left var(--fl-speed) 2s backwards;
     }
 
-    /* Flor 2: Inclinada a la derecha (20deg, 60vmin) */
+    /* Flor 2: Inclinada a la derecha (20deg, 62vmin) */
     .flower--2 {
       left: 50%;
       transform: rotate(20deg);
       animation: moving-flower-2 4s linear infinite;
     }
     .flower--2 .flower__line {
-      height: 60vmin;
+      height: 62vmin;
       animation-delay: 0.6s;
     }
     .flower--2 .flower__line__leaf--1 {
@@ -219,13 +220,14 @@
       animation: blooming-leaf-left var(--fl-speed) 1.3s backwards;
     }
 
-    /* Flor 3: Inclinada a la izquierda (-15deg, 55vmin) */
+    /* Flor 3: Inclinada a la izquierda (-15deg, 56vmin) */
     .flower--3 {
       left: 50%;
       transform: rotate(-15deg);
       animation: moving-flower-3 4s linear infinite;
     }
     .flower--3 .flower__line {
+      height: 56vmin;
       animation-delay: 0.9s;
     }
     .flower--3 .flower__line__leaf--1 {
@@ -347,11 +349,11 @@
     }
 
     .flower__line {
-      height: 55vmin;
+      height: 56vmin;
       width: 1.5vmin;
       background-image:
         linear-gradient(to left, rgba(0, 0, 0, 0.25), transparent, rgba(255, 255, 255, 0.22)),
-        linear-gradient(to top, transparent 10%, #056d24, #16a34a);
+        linear-gradient(to top, #022c0f 0%, #056d24 14%, #16a34a 100%);
       box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.5);
       animation: grow-flower-tree 4s backwards;
     }
@@ -1011,88 +1013,16 @@
     }
 
     /* ==========================================================================
-       BASE NATURAL DE FOLLAJE (CUBRE TODA LA PANTALLA INFERIOR DE LADO A LADO)
-       ========================================================================== */
-    .garden-base {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      width: 100%;
-      height: 28vmin;
-      z-index: 25;
-      pointer-events: none;
-      overflow: hidden;
-    }
-
-    .base-glow {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 12vmin;
-      background: linear-gradient(to top, rgba(2, 5, 20, 0.85) 0%, rgba(5, 78, 30, 0.25) 60%, transparent 100%);
-      pointer-events: none;
-      z-index: 10;
-    }
-
-    .base-leaf {
-      position: absolute;
-      bottom: -1vmin;
-      transform-origin: bottom center;
-      box-shadow: inset 0 0 4px rgba(255, 255, 255, 0.16), 0 0 10px rgba(0, 0, 0, 0.45);
-      will-change: transform;
-      z-index: 5;
-    }
-
-    .base-leaf.arch-left {
-      border-radius: 0 100% 0 100% / 0 100% 0 100%;
-      background: linear-gradient(135deg, #34d399 0%, #10b981 25%, #056d24 65%, #022c0f 100%);
-      transform: translate(-50%, 0) rotate(var(--rot, -30deg));
-      animation: sway-left var(--spd, 4s) ease-in-out infinite alternate var(--del, 0s);
-    }
-
-    .base-leaf.arch-right {
-      border-radius: 100% 0 100% 0 / 100% 0 100%;
-      background: linear-gradient(225deg, #34d399 0%, #10b981 25%, #056d24 65%, #022c0f 100%);
-      transform: translate(-50%, 0) rotate(var(--rot, 30deg));
-      animation: sway-right var(--spd, 4s) ease-in-out infinite alternate var(--del, 0s);
-    }
-
-    .base-leaf.arch-center {
-      border-radius: 50% 50% 0 0;
-      background: linear-gradient(to top, #022c0f 0%, #056d24 40%, #10b981 85%, #34d399 100%);
-      transform: translate(-50%, 0) rotate(var(--rot, 0deg));
-      animation: sway-center var(--spd, 3.5s) ease-in-out infinite alternate var(--del, 0s);
-    }
-
-    @keyframes sway-left {
-      0% { transform: translate(-50%, 0) rotate(var(--rot, -30deg)); }
-      100% { transform: translate(-50%, 0) rotate(calc(var(--rot, -30deg) + 5deg)); }
-    }
-    @keyframes sway-right {
-      0% { transform: translate(-50%, 0) rotate(var(--rot, 30deg)); }
-      100% { transform: translate(-50%, 0) rotate(calc(var(--rot, 30deg) - 5deg)); }
-    }
-    @keyframes sway-center {
-      0% { transform: translate(-50%, 0) rotate(calc(var(--rot, 0deg) - 3deg)); }
-      100% { transform: translate(-50%, 0) rotate(calc(var(--rot, 0deg) + 3deg)); }
-    }
-
-    /* ==========================================================================
        OPTIMIZACIÓN Y TAMAÑO PARA PANTALLAS MÓVILES
        ========================================================================== */
     @media (max-width: 768px), (orientation: portrait) {
       .flowers {
-        transform: scale(1.42) !important;
+        transform: scale(1.36) !important;
         transform-origin: bottom center;
-        bottom: 0 !important;
+        bottom: -4vmin !important;
       }
       .flower {
-        bottom: 0 !important;
-      }
-      .garden-base {
-        height: 25vmin;
+        bottom: -2vmin !important;
       }
       .title-box {
         top: 20px;
@@ -1113,13 +1043,11 @@
 
     @media (max-width: 420px) {
       .flowers {
-        transform: scale(1.48) !important;
-        bottom: 0 !important;
+        transform: scale(1.42) !important;
+        transform-origin: bottom center;
+        bottom: -5vmin !important;
       }
       .flower {
-        bottom: 0 !important;
-      }
-      .garden-base {
-        height: 27vmin;
+        bottom: -2vmin !important;
       }
     }
